@@ -24,7 +24,6 @@ src/
   execution/    # orchestrator (topology planning, role execution, artifact/gap tracking), sandboxed tool executor
   generation/   # LLM client, local HF model wrapper, programmatic agent/tool catalogs
   evaluation/   # HumanEval / MBPP / GSM8K / MATH / HotpotQA evaluators and the paper preset
-  analysis/     # analysis experiments (Pareto, pool-size scalability, teaming statistics, proxy-reward correlation)
 tests/          # unit and contract tests
 data/datas/     # benchmark splits ({humaneval,mbpp,gsm8k,math,hotpotqa}_{test,validate}.jsonl)
 ```

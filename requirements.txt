@@ -11,9 +11,6 @@ pytest>=7.0
 # Semantic retrieval index (index_real_dataset, all-MiniLM-L6-v2)
 sentence-transformers>=2.2
 
-# Analysis figures
-matplotlib>=3.7
-
 # Optional: local Hugging Face backbones (--local_model_dir) and router training
 # torch>=2.1
 # transformers>=4.41
