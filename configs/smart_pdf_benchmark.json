@@ -45,15 +45,10 @@
     "disable_orchestrator_postprocess_repair": false
   },
   "paths": {
-    "benchmark_db": "real_dataset_registry.sqlite",
-    "benchmark_index_dir": "index_real_dataset",
-    "benchmark_index_dir_dummy": "index_real_dataset_dummy",
-    "paper_benchmark_db": "paper_registry.sqlite",
-    "paper_benchmark_index_dir": "index_paper",
-    "paper_manifest": "paper_agent_manifest.json",
-    "real_dataset_manifest": "real_dataset_agent_manifest.json",
-    "alignment_report": "reports/paper_alignment_report.json",
-    "hotpotqa_appendix_db": "hotpotqa_appendix_registry.sqlite",
-    "hotpotqa_appendix_index_dir": "index_hotpotqa_appendix"
+    "benchmark_db": "assets/agent_registry.sqlite",
+    "benchmark_index_dir": "assets/agent_index",
+    "benchmark_index_dir_dummy": "assets/agent_index_dummy",
+    "hotpotqa_appendix_db": "assets/hotpotqa_registry.sqlite",
+    "hotpotqa_appendix_index_dir": "assets/hotpotqa_index"
   }
 }

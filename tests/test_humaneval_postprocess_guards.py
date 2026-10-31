@@ -5,10 +5,16 @@ from pathlib import Path
 
 
 def _load_tool_module(path: Path):
-    spec = importlib.util.spec_from_file_location(path.stem.replace("-", "_"), str(path))
-    module = importlib.util.module_from_spec(spec)
-    assert spec and spec.loader
-    spec.loader.exec_module(module)
+    # tool code lives in postprocess_registry.sqlite (path.stem is the tool id)
+    import sqlite3
+    import types
+
+    db = path.parents[1] / "assets" / "postprocess_registry.sqlite"
+    with sqlite3.connect(str(db)) as conn:
+        row = conn.execute("SELECT code FROM tool_code WHERE id = ?", (path.stem,)).fetchone()
+    assert row, f"missing tool code: {path.stem}"
+    module = types.ModuleType(path.stem.replace("-", "_"))
+    exec(row[0], module.__dict__)
     return module
 
 

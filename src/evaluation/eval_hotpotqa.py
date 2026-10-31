@@ -230,8 +230,8 @@ def evaluate(args: argparse.Namespace) -> Dict[str, Any]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate HotpotQA appendix diagnostic through Agent-router")
     parser.add_argument("--data", default="data/datas/hotpotqa_validate.jsonl")
-    parser.add_argument("--db", default="real_dataset_registry.sqlite")
-    parser.add_argument("--index_dir", default="index_real_dataset")
+    parser.add_argument("--db", default="assets/hotpotqa_registry.sqlite")
+    parser.add_argument("--index_dir", default="assets/hotpotqa_index")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--parallel", action="store_true")
     parser.add_argument("--use_parallel_frontier", action="store_true")

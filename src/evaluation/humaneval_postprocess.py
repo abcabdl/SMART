@@ -671,7 +671,7 @@ def _resolve_postprocess_db_path(db_path: Optional[str]) -> str:
         if not candidate.is_absolute():
             candidate = repo_root / candidate
     else:
-        candidate = repo_root / "postprocess_registry.sqlite"  # SMART release: 9 post-process tools extracted from the dev registry
+        candidate = repo_root / "assets" / "postprocess_registry.sqlite"  # SMART release: 9 post-process tools extracted from the dev registry
     return str(candidate)
 
 

@@ -51,7 +51,7 @@ def main() -> None:
     if wants_semantic and not semantic_ready:
         embedder = "dummy"
         dim = 64
-        index_dir = str(paths.get("benchmark_index_dir_dummy") or "index_real_dataset_dummy")
+        index_dir = str(paths.get("benchmark_index_dir_dummy") or "assets/agent_index_dummy")
     argv = [
         "run_paper_mbpp",
         "--db",

@@ -13,10 +13,12 @@ The selected agents then run through the registered tool library. After each ste
 ## Repository layout
 
 ```
+assets/                            # agent registries and retrieval indexes (see below)
 configs/smart_pdf_benchmark.json   # paper defaults (roles, retrieval, MCTS, reward, runtime, asset paths)
 scripts/
   run_paper_{humaneval,mbpp,gsm8k,math}.py   # main benchmark entry points (paper preset applied)
-  build_assets/                               # regenerate the agent/tool ecosystem and indexes
+  build_assets/                               # rebuild the registries and indexes
+  connect.py                                  # LLM endpoint connectivity check
 src/
   core/         # agent/tool cards, SQLite registry, constraints, role-query builder, topology types
   retrieval/    # embedders, FAISS HNSW index, role-conditioned search service, MMR
@@ -28,16 +30,16 @@ tests/          # unit and contract tests
 data/datas/     # benchmark splits ({humaneval,mbpp,gsm8k,math,hotpotqa}_{test,validate}.jsonl)
 ```
 
-Prebuilt assets at the repository root:
+### Assets (`assets/`)
 
-| Asset | Contents | Index |
+| File | Used by | Contents |
 |---|---|---|
-| `paper_registry.sqlite` | **The 300-agent / 1,500-tool ecosystem from the paper** (75 agents × 4 benchmark families, 5 tools per agent) | `index_paper/` (dummy embedder, dim 64) |
-| `real_dataset_registry.sqlite` | The same ecosystem plus 75 HotpotQA agents (375 agents / 1,875 tools); default for the run scripts | `index_real_dataset/` (all-MiniLM-L6-v2, dim 384), `index_real_dataset_dummy/` (dim 64) |
-| `hotpotqa_appendix_registry.sqlite` | 75 multi-hop QA agents used for HotpotQA | `index_hotpotqa_appendix/` (dim 64) |
-| `postprocess_registry.sqlite` | 9 deterministic code post-processing tools used by the HumanEval/MBPP evaluators (readable copies in `generated_tools/`) | – |
+| `agent_registry.sqlite` | HumanEval, MBPP, GSM8K, MATH | Agent pool: 75 agents for each of HumanEval, MBPP, GSM8K and MATH (the 300 agents in the paper), plus 75 HotpotQA agents. Each agent has 5 tools. |
+| `agent_index/`, `agent_index_dummy/` | same | FAISS indexes over `agent_registry.sqlite`: all-MiniLM-L6-v2 (dim 384) and a hashing embedder fallback (dim 64) |
+| `hotpotqa_registry.sqlite`, `hotpotqa_index/` | HotpotQA | The 75 HotpotQA agents and their index (dim 64) |
+| `postprocess_registry.sqlite` | HumanEval, MBPP | 9 deterministic code post-processing tools |
 
-Tool source code is stored inside each registry (`tool_code` table). The `generated_tools_*` directories hold readable copies of the same code. `*_agent_manifest.json` describes each ecosystem.
+Each registry stores both the agent metadata cards (`cards` table) and the source code of every tool (`tool_code` table).
 
 ## Installation
 
@@ -50,7 +52,7 @@ python -m venv .venv && source .venv/bin/activate   # Windows: .\.venv\Scripts\A
 pip install -r requirements.txt
 ```
 
-`sentence-transformers` (and therefore PyTorch) is needed for the semantic index `index_real_dataset/`. Without it, the run scripts fall back to the dummy embedder and `index_real_dataset_dummy/`.
+`sentence-transformers` (and therefore PyTorch) is needed for `assets/agent_index/`. Without it, the run scripts fall back to the hashing embedder and `assets/agent_index_dummy/`.
 
 ## LLM backend
 
@@ -72,13 +74,13 @@ A single query with a mock LLM needs no API key. It exercises planning, retrieva
 
 ```bash
 python -m src.execution.run_query --paper_mode --use_mock_llm \
-  --db real_dataset_registry.sqlite --index_dir index_real_dataset_dummy \
+  --db assets/agent_registry.sqlite --index_dir assets/agent_index_dummy \
   --embedder dummy --dim 64 --roles planner,builder,checker,refactor \
   --dynamic_topology --mcts_dynamic_optimization \
   --query "Implement a function that returns the maximum subarray sum."
 ```
 
-Drop `--use_mock_llm` and set the variables above to use a real model. With `sentence-transformers` installed, use `--index_dir index_real_dataset --embedder sentence-transformer --dim 384` instead.
+Drop `--use_mock_llm` and set the variables above to use a real model. With `sentence-transformers` installed, use `--index_dir assets/agent_index --embedder sentence-transformer --dim 384` instead.
 
 ## Reproducing the main results
 
@@ -91,9 +93,7 @@ python scripts/run_paper_gsm8k.py     --tasks data/datas/gsm8k_test.jsonl     --
 python scripts/run_paper_math.py      --tasks data/datas/math_test.jsonl      --out runs/math_report.json
 ```
 
-To run against the paper's 300-agent ecosystem without the HotpotQA agents, add `--db paper_registry.sqlite --index_dir index_paper --embedder dummy --dim 64`.
-
-HotpotQA uses `python -m src.evaluation.eval_hotpotqa` (see `--help`; it defaults to `data/datas/hotpotqa_validate.jsonl`).
+HotpotQA uses `python -m src.evaluation.eval_hotpotqa` (see `--help`; it defaults to `data/datas/hotpotqa_validate.jsonl` and `assets/hotpotqa_registry.sqlite`).
 
 ### Paper hyperparameters
 
@@ -118,25 +118,23 @@ Ablation switches exposed by the evaluators include `--no_transition_term`, `--n
 | Execution and online update | `src/execution/orchestrator.py`, `src/execution/tool_executor.py`, `src/execution/sandbox.py`, `src/routing/bandit_store.py` |
 | Agent metadata schema | `src/core/cards.py` |
 
-## Agent ecosystem
+## Agent pool
 
-The ecosystem is synthesized programmatically. Agent cards and tool specs come from `src/generation/real_dataset_bulk_catalog.py` and are registered with schema validation. To regenerate:
+The agent pool is generated programmatically. Agent cards and tool specs are defined in `src/generation/real_dataset_bulk_catalog.py` and registered with schema validation. To rebuild:
 
 ```bash
-python scripts/build_assets/generate_real_dataset_assets.py      # real_dataset_registry.sqlite + index + manifest
-python scripts/build_assets/generate_paper_assets.py             # paper_registry.sqlite (300 agents) + index_paper
-python scripts/build_assets/generate_hotpotqa_appendix_assets.py # HotpotQA registry + index
-python scripts/build_assets/generate_paper_alignment_report.py   # reports/paper_alignment_report.json
+python scripts/build_assets/build_agent_registry.py     # assets/agent_registry.sqlite + assets/agent_index
+python scripts/build_assets/build_hotpotqa_registry.py  # assets/hotpotqa_registry.sqlite + assets/hotpotqa_index
 ```
 
 To rebuild an index only:
 
 ```bash
-python -m src.retrieval.build_index --db real_dataset_registry.sqlite --kind agent \
-  --out index_real_dataset --embedder sentence-transformer --dim 384
+python -m src.retrieval.build_index --db assets/agent_registry.sqlite --kind agent \
+  --out assets/agent_index --embedder sentence-transformer --dim 384
 ```
 
-The paper ecosystems do not use ToolBench. `src/execution/demo_runner.py` and `src/execution/import_toolbench_tools.py` are kept for an optional legacy demo. They expect raw [ToolBench](https://github.com/OpenBMB/ToolBench) tools under `tools/`, which this repository does not include.
+The agent pool does not use ToolBench. `src/execution/demo_runner.py` and `src/execution/import_toolbench_tools.py` are kept for an optional legacy demo. They expect raw [ToolBench](https://github.com/OpenBMB/ToolBench) tools under `tools/`, which this repository does not include.
 
 Tools are invoked as `run(inputs: dict) -> dict` inside a sandbox with a timeout and module allow-list (`src/execution/sandbox.py`).
 
