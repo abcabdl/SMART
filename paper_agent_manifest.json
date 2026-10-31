@@ -1,0 +1,39 @@
+{
+  "source_of_truth": "Multi_agent_NeurIPS (7).pdf",
+  "agent_count": 300,
+  "tool_count": 1500,
+  "tools_per_agent": 5,
+  "dataset_distribution": {
+    "humaneval": 75,
+    "mbpp": 75,
+    "gsm8k": 75,
+    "math": 75
+  },
+  "role_distribution": {
+    "planner": 76,
+    "builder": 76,
+    "checker": 76,
+    "refactor": 72
+  },
+  "domains_or_benchmarks": [
+    "humaneval",
+    "mbpp",
+    "gsm8k",
+    "math"
+  ],
+  "all_tools_unique_across_agents": true,
+  "paths": {
+    "benchmark_db": "paper_registry.sqlite",
+    "benchmark_index_dir": "index_paper",
+    "paper_manifest": "paper_agent_manifest.json",
+    "alignment_report": "reports/paper_alignment_report.json",
+    "hotpotqa_appendix_db": "hotpotqa_appendix_registry.sqlite",
+    "hotpotqa_appendix_index_dir": "index_hotpotqa_appendix"
+  },
+  "generated_at_utc": "2026-04-25T09:41:03.448667+00:00",
+  "db_path": "paper_registry.sqlite",
+  "index_dir": "index_paper",
+  "tools_dir": "generated_tools_paper",
+  "backup_db_path": "paper_registry.sqlite.bak.20260425T094045",
+  "cleared_tool_file_count": 1500
+}

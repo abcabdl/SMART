@@ -1,0 +1,23 @@
+# Core
+pydantic>=2.0
+numpy>=1.24
+fastapi>=0.100
+httpx>=0.24
+tqdm>=4.66
+openai>=1.0
+faiss-cpu>=1.7.4        # or faiss-gpu (do not install both)
+pytest>=7.0
+
+# Semantic retrieval index (index_real_dataset, all-MiniLM-L6-v2)
+sentence-transformers>=2.2
+
+# Analysis figures
+matplotlib>=3.7
+
+# Optional: local Hugging Face backbones (--local_model_dir) and router training
+# torch>=2.1
+# transformers>=4.41
+# peft>=0.11
+# accelerate>=0.30
+# bitsandbytes>=0.43
+# datasets>=2.19

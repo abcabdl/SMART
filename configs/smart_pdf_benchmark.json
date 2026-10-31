@@ -1,0 +1,59 @@
+{
+  "source_of_truth": "SMART (NeurIPS 2026)",
+  "datasets": [
+    "humaneval",
+    "mbpp",
+    "gsm8k",
+    "math"
+  ],
+  "hotpotqa_main_benchmark": false,
+  "agent_pool_size": 300,
+  "tools_per_agent": 5,
+  "total_tools": 1500,
+  "roles": [
+    "planner",
+    "builder",
+    "checker",
+    "refactor"
+  ],
+  "retrieval": {
+    "top_n": 30,
+    "top_k": 15,
+    "mmr_lambda": 0.5,
+    "artifact_aware_query": true,
+    "experimental_reranker_after_mmr": false
+  },
+  "mcts": {
+    "reward_variant": "mean_active",
+    "iterations": 64,
+    "rollout_depth": 4,
+    "exploration": 1.414,
+    "discount": 0.95,
+    "max_candidates": 5,
+    "use_transition_term": true,
+    "use_iochain": true,
+    "use_gap_term": true
+  },
+  "runtime": {
+    "embedder": "sentence-transformer",
+    "embedder_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "dim": 384,
+    "seed": 7,
+    "use_cross_instance_cache": false,
+    "update_posteriors_across_instances": false,
+    "use_parallel_frontier": false,
+    "disable_orchestrator_postprocess_repair": false
+  },
+  "paths": {
+    "benchmark_db": "real_dataset_registry.sqlite",
+    "benchmark_index_dir": "index_real_dataset",
+    "benchmark_index_dir_dummy": "index_real_dataset_dummy",
+    "paper_benchmark_db": "paper_registry.sqlite",
+    "paper_benchmark_index_dir": "index_paper",
+    "paper_manifest": "paper_agent_manifest.json",
+    "real_dataset_manifest": "real_dataset_agent_manifest.json",
+    "alignment_report": "reports/paper_alignment_report.json",
+    "hotpotqa_appendix_db": "hotpotqa_appendix_registry.sqlite",
+    "hotpotqa_appendix_index_dir": "index_hotpotqa_appendix"
+  }
+}

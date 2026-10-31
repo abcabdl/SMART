@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# run outputs
+runs/
+reports/
+models/*
+!models/.gitkeep
+src/analysis/outputs/
+
+*.bak
+*.bak.*
+*.sqlite.bak*
+*.zip
+.env
+
+# created by tests / default CLI args
+/registry.sqlite
+/demo_registry.sqlite
