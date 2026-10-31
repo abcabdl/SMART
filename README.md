@@ -63,7 +63,7 @@ export LLM_API_BASE=https://api.openai.com/v1     # or OPENAI_BASE_URL; any Open
 export LLM_MODEL=gpt-4o-mini                      # paper backbone
 ```
 
-The evaluators also accept `--code_model / --code_base_url / --code_api_key`. To use a local Hugging Face model instead, pass `--local_model_dir <path>`. Raw LLM calls are logged to `runs/llm_raw.jsonl`. You can change that path with `LLM_RAW_LOG_PATH`.
+Check the endpoint with `python scripts/connect.py`. The evaluators also accept `--code_model / --code_base_url / --code_api_key`. To use a local Hugging Face model instead, pass `--local_model_dir <path>`. Raw LLM calls are logged to `runs/llm_raw.jsonl`. You can change that path with `LLM_RAW_LOG_PATH`.
 
 The MCTS search makes no LLM calls (Stage 3). LLMs are used only for topology planning and for role execution.
 
@@ -136,6 +136,8 @@ To rebuild an index only:
 python -m src.retrieval.build_index --db real_dataset_registry.sqlite --kind agent \
   --out index_real_dataset --embedder sentence-transformer --dim 384
 ```
+
+The paper ecosystems do not use ToolBench. `src/execution/demo_runner.py` and `src/execution/import_toolbench_tools.py` are kept for an optional legacy demo. They expect raw [ToolBench](https://github.com/OpenBMB/ToolBench) tools under `tools/`, which this repository does not include.
 
 Tools are invoked as `run(inputs: dict) -> dict` inside a sandbox with a timeout and module allow-list (`src/execution/sandbox.py`).
 
